@@ -1,0 +1,523 @@
+---
+title: "Week 13 IP"
+author: "Njoki Mbugua"
+date: "7/1/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+library(knitr)
+```
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Defining the Question
+### a) Specifying the Question
+The main objective of this project is to determine which individuals are most likely to click on ads in a blog post.
+
+### b) Defining the Metric for Success
+Exhaustively perform Exploratory Data Analysis (Univariate and bivariate analysis) to determine that enabling factors of individuals clicking on ads.
+
+### c) Understanding the context
+Working as a consultant Data science consultant to help the client identify which individuals are most likely to click on her ads. The entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process.
+
+### d) Recording the experimental design
+Importing and reading the data
+Data Cleaning
+Exploratory Data Analysis(Univariate and bivariate)
+Conclusions and recommendations
+
+### e) Data Relevance
+The data columns in the data set include:Daily Time Spent on Site,Age,Area Income,Daily Internet Usage,Ad Topic Line,City,Male,Country,Time stamp and Clicked on Ad(http://bit.ly/IPAdvertisingData).
+
+# Reading the data
+```{r}
+
+data <- read.csv(file.choose(),na.strings = "")
+
+# printing the top six rows of the dataset
+head(data)
+
+```
+
+```{r}
+# printing the bottom rows of the dataset
+
+tail(data, n=10)
+
+```
+
+```{r}
+# checking the number of rows in the dataset
+nrow(data)
+
+#We have 1000 rows.
+```
+
+```{r}
+# checking the number of columns
+ncol(data)
+
+#The dataset has 10 columns
+```
+
+```{r}
+# checking structure of the dataset
+str(data)
+```
+
+```{r}
+# getting summary on the columns
+summary(data)
+
+```
+# Data Cleaning
+## Checking for missing values
+```{r}
+sum(is.na(data))
+
+```
+There are no missing values in the data set.
+
+## Checking for duplicates
+```{r}
+
+# duplicated(data)
+sum(duplicated(data))
+
+# there are no duplicates in the dataset
+
+```
+There are no duplicates in the data set.
+```{r}
+install.packages("tidyverse", repos = 'http://cran.us.r-project.org')
+
+library(tidyverse)
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+# Selecting numeric column
+df <- select_if(data, is.numeric)             
+df
+```
+## Checking for outliers
+
+```{r}
+# Using the boxplot to detect outliers in the numeric columns
+boxplot(df)
+
+```
+Outliers were detected in the income column.
+
+
+Listing the outliers in the income column
+```{r}
+# listing outliers
+boxplot.stats(df$Area.Income)$out
+```
+The outliers were not removed since income levels vary extremely meaning that they are valid and important for analysis.
+
+# Univariate analysis
+## Measures of central tendency
+```{R}
+# Time spent on site
+Daily.Time.Spent.on.Site.mean <- mean(data$Daily.Time.Spent.on.Site)
+Daily.Time.Spent.on.Site.mean
+
+Daily.Time.Spent.on.Site.median <-median(data$Daily.Time.Spent.on.Site)
+Daily.Time.Spent.on.Site.median
+Daily.Time.Spent.on.Site.sd <- sd(data$Daily.Time.Spent.on.Site)
+Daily.Time.Spent.on.Site.sd
+```
+The mean daily time spent on site is 65.002
+```{R}
+# Income mean
+##Area.Income.mean
+```
+The mean income is 55000.
+```{R}
+# Average age
+##Age.mean
+```
+The average age is 36.
+```{R}
+# getting summary statistics for numeric variables
+summary(df)
+```
+The mean age of people visiting the site is 36, max age is 61 and min age is 19.
+
+The maximum area income is 79485 and min area income  is 13996 with mean area income being 55000. 
+
+The minimum amount of time spent on the blog is 32.60 and maximum is 91.43 with a mean of 65.
+
+
+The maximum daily internet usage on the website is 270 with a mean of 180 and a minimum of 104.
+
+```{r}
+install.packages("moments", repos = 'http://cran.us.r-project.org')
+```
+
+```{r}
+library(moments)
+```
+
+```{R}
+install.packages("ggplot2", repos = 'http://cran.us.r-project.org')
+
+```
+
+```{r}
+library(ggplot2)
+```
+
+## Univariate graphical EDA
+```{R}
+#help("ggplot2")
+# Histogram of age.
+qplot(data=df, x=df$Age, colour=I("blue"))
+
+```
+Age is not normally distributed.
+Most of the respondents are between the ages of 25 and 50.
+
+```{R}
+#library(ggplot2)
+ggplot(data=df, aes(x = df$Age)) + 
+    geom_bar(aes(fill=..count..), alpha=0.5, size=0.5,colour="blue",binwidth=60*5)
+
+```
+
+
+```{R}
+# Histogram of Area income
+qplot(data=df, x=df$Area.Income, colour=I("blue"))
+
+```
+Most People were earning between 50,000 and 70,000.
+
+
+```{R}
+# Histogram of Daily Internet Usage
+qplot(data=df, x=df$Daily.Internet.Usage, colour=I("red"))
+
+
+```
+There is no particular pattern for the daily internet usage
+
+```{R}
+qplot(data=df, x=df$Daily.Time.Spent.on.Site, colour=I("red"))
+
+
+```
+Majority of the people spent about 60-80 minutes on the blog site.
+
+
+# Bivariate Analysis
+```{r}
+# bargraph showing clicking of ads by gender
+ggplot(data = df, aes(x = df$Male)) +  geom_bar(fill = "#0073C2FF", color = 'cyan')
+```
+Females are more likely to click on ads than males.
+
+```{r}
+# barplot showing count of how people clicked on ads
+
+ggplot(data = df, aes(x = df$Clicked.on.Ad)) +  geom_bar(fill = "#0073C2FF", color = 'cyan')
+  
+
+```
+There was an equal number of individuals who clicked on ad and those who did not.
+
+```{R}
+# relationship between income and clicking on ad
+
+#qplot(data=data, x=data$Age,y=data$Area.Income, colour=data$Clicked.on.Ad, #size=I(3),shape=I(16),alpha=0.6, main = "Income vs clicking on ad")
+
+ggplot(data = data) + 
+	geom_point(aes(x = data$Age, y = data$Area.Income, color = data$Clicked.on.Ad), size = 3, alpha = 0.6)
+
+
+```
+
+People earning around 75k and below are more likely to click on ads. 
+
+```{R}
+# Scatterplot showing relationship between age, time spent on site and clicking on ads
+
+ggplot(data = data) +
+  geom_point(aes(x = data$Age, y = data$Daily.Time.Spent.on.Site, color = data$Clicked.on.Ad), size = 3, alpha = 0.6)
+```
+Most people that log in to the site are between the ages of 30-50.
+The time spent by the respondents on site does not necessarily translate to the respondents clicking on ads.
+Most people that click on adds are between the ages of 40-50.
+..............................
+
+```{R}
+# Scatterplot showing relationship between internet usage, time spent on site and clicking on ads
+
+ggplot(data = data) +
+  geom_point(aes(x = data$Daily.Internet.Usage, y = data$Daily.Time.Spent.on.Site, color = data$Clicked.on.Ad), size = 3, alpha = 0.6)
+
+ggplot(data, aes(x = `Daily.Internet.Usage`, y = `Daily.Time.Spent.on.Site`)) +
+  geom_point() 
+```
+Those with less daily internet usage tend to click more on ads
+Spending much time on the site does not equal to clicking on the ad.
+
+
+```{R}
+install.packages("corrplot",repos = 'http://cran.us.r-project.org')
+
+```
+
+```{R}
+library(corrplot)
+```
+
+
+```{R}
+# Creating a correlation plot for the numeric variables
+
+corrplot(cor(df), method="color",addCoef.col = "black", 
+         tl.col="black", tl.srt=45)
+
+corrplot(cor(df), method = "circle") 
+```
+There is a strong negative correlation between clicking on ad and daily time spent on site.
+
+A strong negative correlation is also observed between clicking on ad and daily internet usage.
+
+
+# Conclusions and recommendations
+1. Females are more likely to click on ads than males
+2. Middle income earners are more likely to click on ads as opposed to other income groups
+3. More internet usage and time spent on the site doesn't not translate to individuals clicking on ads
+
+
+# Modeling
+## Baseline Model- Logistic regression.
+Since it's a binary classification problem, we use logistic regression model as the baseline model.
+```{r}
+head(df)
+
+
+```
+```{r}
+str(df)
+```
+
+```{r}
+# first we convert target variable to vector
+df$Clicked.on.Ad <- factor(df$Clicked.on.Ad)
+```
+
+```{r}
+library(caret)
+#Create an index for data partitioning
+set.seed(88)
+trainDataIndex  <- createDataPartition(df$Clicked.on.Ad, p = 0.70, list = FALSE)
+
+```
+
+```{r}
+#Using the indexes to split data into test and train set
+trainData <- df[trainDataIndex, ]
+testData <- df[-trainDataIndex, ]
+```
+
+```{r}
+table(trainData$Clicked.on.Ad)
+
+# there is no imbalances between classes.
+```
+
+```{r}
+# Using generalized linear model (glm), to create the relationship model between the predictor and the response variables.
+mlogit <- glm(Clicked.on.Ad~ Daily.Time.Spent.on.Site + Age + Area.Income + Daily.Internet.Usage + Male , data = trainData, family = "binomial")
+
+```
+
+```{r}
+# Viewing the results of the model
+summary(mlogit)
+
+```
+
+
+```{r}
+# making predictions on the test data
+
+predictions <- predict(mlogit, newdata = testData, type = "response")
+predictions
+```
+```{r}
+#confusionMatrix(table(predictions, testData$Clicked.on.Ad))
+
+table(testData$Clicked.on.Ad, predictions > 0.5)
+```
+The model was able to predict 143 false
+```{r}
+# Assessing the accuracy of the model
+y_pred_num <- ifelse(predictions > 0.5, 1, 0)
+y_pred <- factor(y_pred_num, levels=c(0, 1))
+y_act <- testData$Clicked.on.Ad
+
+Accuracy <- mean(y_pred == y_act)
+Accuracy
+```
+The model achieved an accuracy of 96.3% which means that it's ability to predict whether a customer will click on an ad or not is pretty good.
+
+## k-Nearest Neighbours
+```{r}
+head(df)
+```
+```{r}
+as.numeric(levels(df$Clicked.on.Ad))
+```
+```{r}
+# Calling the required libraries
+library(class)    
+require(class)
+```
+
+```{r}
+normalize<- function(x){
+  return((x-min(x))/(max(x)-min(x)))
+}
+```
+
+```{r}
+# Replacing contents of dataset with normalized values
+
+df$Daily.Time.Spent.on.Site<- normalize(df$Daily.Time.Spent.on.Site)
+df$Age <- normalize(df$Age)
+df$Area.Income<- normalize(df$Area.Income)
+df$Daily.Internet.Usage<- normalize(df$Daily.Internet.Usage)
+df$Male<- normalize(df$Male)
+#df$Clicked.on.Ad<- normalize(df$Clicked.on.Ad)
+
+head(df)
+```
+```{r}
+#Using the indexes to split data into test and train set
+trainData <- df[trainDataIndex, ]
+testData <- df[-trainDataIndex, ]
+```
+
+```{r}
+# Fitting our model
+set.seed(522) 
+kNNmodel <- train(Clicked.on.Ad ~ ., data = trainData, method = "knn", trControl = trainControl(method = 'LOOCV'), preProcess = c("center", "scale"))
+```
+
+```{r}
+#Using the model to predict
+predictions <- predict(kNNmodel, newdata = testData)
+predictions
+```
+
+```{r}
+# printing out the confusion matrix
+confusionMatrix(predictions, testData$Clicked.on.Ad)
+
+
+```
+The model achieved an accuracy of 96% thus it will perform well in the prediction of clicking on ads.
+
+## Challenging the solution using SVM
+```{r}
+# Calling the Libraries
+library(caret)
+```
+
+```{r}
+# first we convert target variable to vector
+df$Clicked.on.Ad <- factor(df$Clicked.on.Ad)
+```
+
+
+```{r}
+# 
+#Create an index for data partitioning
+set.seed(88)
+trainDataIndex  <- createDataPartition(df$Clicked.on.Ad, p = 0.70, list = FALSE)
+
+```
+
+```{r}
+#Using the indexes to split data into test and train set
+trainData <- df[trainDataIndex, ]
+testData <- df[-trainDataIndex, ]
+```
+
+```{r}
+# We check the dimensions of out training dataframe and testing dataframe
+# 
+dim(trainData); 
+dim(testData);
+```
+
+```{r}
+# control all the computational overheads
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+```
+
+```{r}
+# Building the model using linear kernel
+svm_Linear <- train(Clicked.on.Ad~., data = trainData, method = "svmLinear",
+trControl=trctrl,
+preProcess = c("center", "scale"),
+tuneLength = 10)
+
+```
+
+```{r}
+# checking the result of the model as shown below
+svm_Linear
+```
+
+```{r}
+# using predict() method to view results
+predictions <- predict(svm_Linear, newdata = testData)
+predictions
+```
+
+```{r}
+# Then printing out the confusion matrix
+confusionMatrix(table(predictions, testData$Clicked.on.Ad))
+```
+The model achieved an accuracy of 96.7%
+
+## Comparing the models and Recommendations
+```{r}
+
+mlogit <- c(0.9633333)
+kNNmodel <- c(0.96)
+svm_Linear <- c(0.9667)
+
+df <- data.frame(mlogit, kNNmodel, svm_Linear)
+df
+```
+All the three models achieved an almost similar accuracy of 96%.
+We advise the client to use SVM for prediction since it performed slightly better by a very thin margin and is handles outliers much better than Logistic regression and k-NN.
+
+
+
+
+
+
+
+
+
+
+
+
+
